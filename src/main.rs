@@ -3,6 +3,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::process::{exit, Command};
 
@@ -71,8 +72,23 @@ fn git_branchless_query_branches(query: &str) -> Vec<String> {
         .expect("Failed to execute git branchless query command");
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    let branches: Vec<String> = stdout.split('\n').map(|s| s.to_string()).collect();
-    branches
+    parse_git_branchless_branches(&stdout)
+}
+
+fn parse_git_branchless_branches(branchless_stdout: &str) -> Vec<String> {
+    branchless_stdout
+        .split('\n')
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect()
+}
+
+#[test]
+fn parse_git_branchless_branches_works() {
+    let branches = parse_git_branchless_branches("a\n\nb\nc\n");
+    assert_eq!(branches[0], "a");
+    assert_eq!(branches[1], "b");
+    assert_eq!(branches[2], "c");
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -109,6 +125,9 @@ fn get_pr_train_branches(branch: &str) -> Vec<String> {
 fn get_base_branch(branch: &str) -> String {
     let branches =
         git_branchless_query_branches(&format!("ancestors({branch}) - {branch} - green"));
+    for branch in &branches {
+        println!("{branch}")
+    }
     branches.last().unwrap_or(&"master".to_string()).to_string()
 }
 
@@ -180,6 +199,7 @@ fn command_update() {
 
     for branch in &branches_with_pr {
         let base_branch = get_base_branch(branch);
+        println!("{base_branch}");
 
         let pr = branch_pr_map.get(branch).unwrap();
 
@@ -231,7 +251,7 @@ fn command_update() {
             continue;
         }
 
-        edit_github_pr(branch, &base_branch, &body).expect("Failed to edit GitHub PR");
+        // edit_github_pr(branch, &base_branch, &body).expect("Failed to edit GitHub PR");
         println!("Updated {branch}");
     }
 }
