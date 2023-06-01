@@ -229,9 +229,9 @@ fn command_update(revset: &str) {
             .into_iter()
             .map(|number| {
                 if pr.number == number {
-                    format!("- #{} 📍", number)
+                    format!("- #{number} 📍")
                 } else {
-                    format!("- #{}", number)
+                    format!("- #{number}")
                 }
             })
             .collect();
