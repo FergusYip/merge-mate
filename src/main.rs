@@ -3,7 +3,6 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::borrow::Cow;
 use std::collections::HashMap;
 use std::process::{exit, Command};
 
@@ -92,10 +91,11 @@ fn parse_git_branchless_branches_works() {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct GitHubPullRequest {
     number: u32,
-    baseRefName: String,
-    headRefName: String,
+    base_ref_name: String,
+    head_ref_name: String,
     body: String,
 }
 
@@ -184,7 +184,7 @@ fn command_update() {
 
     let branch_pr_map: HashMap<String, GitHubPullRequest> = open_prs
         .into_iter()
-        .map(|pr| (pr.headRefName.to_string(), pr))
+        .map(|pr| (pr.head_ref_name.to_string(), pr))
         .collect();
     let branches_with_pr: Vec<String> = branches
         .into_iter()
@@ -239,7 +239,7 @@ fn command_update() {
 
         let body = upsert_pr_train_contents_to_body(pr.body.as_str(), &pr_train_contents);
 
-        if body == pr.body.as_str() && base_branch == pr.baseRefName.as_str() {
+        if body == pr.body.as_str() && base_branch == pr.base_ref_name.as_str() {
             println!("Skipped {branch}");
             continue;
         }
