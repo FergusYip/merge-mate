@@ -222,8 +222,10 @@ fn command_update(revset: &str) {
             .filter(|number| is_pr_merged(number))
             .collect();
 
-        let mut pr_train_numbers = merged_prs;
-        pr_train_numbers.extend(new_pr_train_numbers.into_iter());
+        let pr_train_numbers: Vec<u32> = merged_prs
+            .into_iter()
+            .chain(new_pr_train_numbers.into_iter())
+            .collect();
 
         let pr_train_list: Vec<String> = pr_train_numbers
             .into_iter()
