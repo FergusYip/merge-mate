@@ -133,12 +133,12 @@ fn get_base_branch(branch: &str) -> String {
 }
 
 fn edit_github_pr(branch: &str, base_branch: &str, body: &str) -> Result<(), String> {
-    let status = Command::new("gh")
+    let output = Command::new("gh")
         .args(&["pr", "edit", branch, "-B", base_branch, "-b", body])
-        .status()
+        .output()
         .expect("Failed to execute gh pr edit command");
 
-    if status.success() {
+    if output.status.success() {
         Ok(())
     } else {
         Err("Failed to edit GitHub PR".to_string())
