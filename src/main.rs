@@ -9,7 +9,7 @@ use std::process::{exit, Command};
 
 lazy_static! {
     static ref PR_TRAIN_CONTENTS_PATTERN: Regex =
-        Regex::new(r"<pr-train-toc>(.*?)</pr-train-toc>").unwrap();
+        Regex::new(r"(?s)<pr-train-toc>(.*?)</pr-train-toc>").unwrap();
 }
 
 #[derive(Parser)]
@@ -125,9 +125,6 @@ fn get_pr_train_branches(branch: &str) -> Vec<String> {
 fn get_base_branch(branch: &str) -> String {
     let branches =
         git_branchless_query_branches(&format!("ancestors({branch}) - {branch} - green"));
-    for branch in &branches {
-        println!("{branch}")
-    }
     branches.last().unwrap_or(&"master".to_string()).to_string()
 }
 
@@ -158,10 +155,7 @@ fn upsert_pr_train_contents_to_body(body: &str, pr_train_contents: &str) -> Stri
             )
             .to_string()
     } else {
-        format!(
-            "{}\n\n<pr-train-toc>{}</pr-train-toc>\n",
-            body, pr_train_contents
-        )
+        format!("{body}\n\n<pr-train-toc>{pr_train_contents}</pr-train-toc>\n")
     }
 }
 
@@ -199,7 +193,6 @@ fn command_update() {
 
     for branch in &branches_with_pr {
         let base_branch = get_base_branch(branch);
-        println!("{base_branch}");
 
         let pr = branch_pr_map.get(branch).unwrap();
 
@@ -251,7 +244,7 @@ fn command_update() {
             continue;
         }
 
-        // edit_github_pr(branch, &base_branch, &body).expect("Failed to edit GitHub PR");
+        edit_github_pr(branch, &base_branch, &body).expect("Failed to edit GitHub PR");
         println!("Updated {branch}");
     }
 }
