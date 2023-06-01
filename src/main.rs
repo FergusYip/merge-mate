@@ -23,7 +23,11 @@ enum Commands {
     /// Create pull requests for all branches in the current stack
     Push {},
     /// Update all pull requests in the current stack
-    Update {},
+    Update {
+        /// Branches to update
+        #[arg(default_value_t = String::from("stack()"))]
+        revset: String,
+    },
 }
 
 fn main() {
@@ -42,7 +46,7 @@ fn main() {
         Commands::Push {} => {
             panic!("Push not implemented")
         }
-        Commands::Update {} => command_update(),
+        Commands::Update { revset } => command_update(revset),
     }
 }
 
@@ -178,8 +182,8 @@ fn is_pr_merged(pr_number: &u32) -> bool {
     pr["state"].as_str().unwrap_or("") == "MERGED"
 }
 
-fn command_update() {
-    let branches = git_branchless_query_branches("stack()");
+fn command_update(revset: &str) {
+    let branches = git_branchless_query_branches(revset);
     let open_prs = get_open_prs();
 
     let branch_pr_map: HashMap<String, GitHubPullRequest> = open_prs
