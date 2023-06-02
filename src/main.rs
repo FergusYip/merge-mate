@@ -21,7 +21,7 @@ struct Args {
 #[derive(Subcommand)]
 enum Commands {
     /// Create pull requests for all branches in the current stack
-    Push {},
+    // Push {},
     /// Update all pull requests in the current stack
     Update {
         /// Branches to update
@@ -43,9 +43,9 @@ fn main() {
     }
 
     match &args.command {
-        Commands::Push {} => {
-            panic!("Push not implemented")
-        }
+        // Commands::Push {} => {
+        //     panic!("Push not implemented")
+        // }
         Commands::Update { revset } => command_update(revset),
     }
 }
