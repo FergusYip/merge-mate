@@ -10,7 +10,9 @@ This is a tool that helps you manage your pull requests on GitHub.
 
 ## Installation
 
-TODO
+```shell
+ cargo install --git 'https://github.com/FergusYip/merge-mate' --locked --force 
+```
 
 ## Quick Start
 
