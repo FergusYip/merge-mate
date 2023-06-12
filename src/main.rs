@@ -61,7 +61,7 @@ fn is_github_cli_installed() -> bool {
 
 fn is_git_branchless_installed() -> bool {
     let output = Command::new("git")
-        .args(&["branchless", "--version"])
+        .args(["branchless", "--version"])
         .output()
         .expect("Failed to execute command");
 
@@ -70,7 +70,7 @@ fn is_git_branchless_installed() -> bool {
 
 fn git_branchless_query_branches(query: &str) -> Vec<String> {
     let output = Command::new("git")
-        .args(&["branchless", "query", "-b", query])
+        .args(["branchless", "query", "-b", query])
         .output()
         .expect("Failed to execute git branchless query command");
 
@@ -105,7 +105,7 @@ struct GitHubPullRequest {
 
 fn get_open_prs() -> Vec<GitHubPullRequest> {
     let output = Command::new("gh")
-        .args(&[
+        .args([
             "pr",
             "list",
             "-A",
@@ -134,7 +134,7 @@ fn get_base_branch(branch: &str) -> String {
 
 fn edit_github_pr(branch: &str, base_branch: &str, body: &str) -> Result<(), String> {
     let output = Command::new("gh")
-        .args(&["pr", "edit", branch, "-B", base_branch, "-b", body])
+        .args(["pr", "edit", branch, "-B", base_branch, "-b", body])
         .output()
         .expect("Failed to execute gh pr edit command");
 
@@ -151,10 +151,10 @@ fn get_pr_train_contents(body: &str) -> Option<String> {
 }
 
 fn upsert_pr_train_contents_to_body(body: &str, pr_train_contents: &str) -> String {
-    if PR_TRAIN_CONTENTS_PATTERN.is_match(&body) {
+    if PR_TRAIN_CONTENTS_PATTERN.is_match(body) {
         PR_TRAIN_CONTENTS_PATTERN
             .replace_all(
-                &body,
+                body,
                 &format!("<pr-train-toc>{pr_train_contents}</pr-train-toc>"),
             )
             .to_string()
@@ -165,14 +165,14 @@ fn upsert_pr_train_contents_to_body(body: &str, pr_train_contents: &str) -> Stri
 
 fn get_pr_train_numbers_from_contents(pr_train_contents: &str) -> Vec<u32> {
     let re = Regex::new(r"#(\d+)").unwrap();
-    re.captures_iter(&pr_train_contents)
+    re.captures_iter(pr_train_contents)
         .map(|capture| capture[1].to_string().parse::<u32>().unwrap_or_default())
         .collect()
 }
 
 fn is_pr_merged(pr_number: &u32) -> bool {
     let output = Command::new("gh")
-        .args(&["pr", "view", "--json", "state", &pr_number.to_string()])
+        .args(["pr", "view", "--json", "state", &pr_number.to_string()])
         .output()
         .expect("Failed to execute gh pr view command");
 
@@ -219,7 +219,7 @@ fn command_update(revset: &str) {
             .collect();
         let merged_prs: Vec<u32> = prs_not_in_current
             .into_iter()
-            .filter(|number| is_pr_merged(number))
+            .filter(is_pr_merged)
             .collect();
 
         let pr_train_numbers: Vec<u32> = merged_prs
