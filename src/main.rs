@@ -172,14 +172,15 @@ fn get_pr_train_numbers_from_contents(pr_train_contents: &str) -> Vec<u32> {
 
 fn is_pr_merged(pr_number: &u32) -> bool {
     let output = Command::new("gh")
-        .args(["pr", "view", "--json", "state", &pr_number.to_string()])
+        .args(["pr", "view", "--json", "title,state", &pr_number.to_string()])
         .output()
         .expect("Failed to execute gh pr view command");
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let pr: Value = serde_json::from_str(&stdout).expect("Failed to parse PR JSON");
 
-    pr["state"].as_str().unwrap_or("") == "MERGED"
+    pr["title"].as_str().unwrap_or("").starts_with("[merged]") ||
+        pr["state"].as_str().unwrap_or("") == "MERGED"
 }
 
 fn command_update(revset: &str) {
