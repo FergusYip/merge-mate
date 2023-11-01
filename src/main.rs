@@ -14,6 +14,8 @@ struct Args {
 enum Commands {
     /// Create pull requests for all branches in the current stack
     // Push {},
+    // Wait for GitHub Pull Request to be in sync with the local branch
+    Wait { branch: Option<String> },
     /// Update all pull requests in the current stack
     Update {
         /// Branches to update
@@ -38,6 +40,7 @@ fn main() {
         // Commands::Push {} => {
         //     panic!("Push not implemented")
         // }
+        Commands::Wait { branch } => commands::wait(branch.to_owned()),
         Commands::Update { revset } => commands::update(revset),
     }
 }
