@@ -12,9 +12,9 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Create pull requests for all branches in the current stack
-    // Push {},
-    // Wait for GitHub Pull Request to be in sync with the local branch
+    /// Clean up merged pull requests
+    Cleanup {},
+    /// Wait for GitHub Pull Request to be in sync with the local branch
     Wait { branch: Option<String> },
     /// Update all pull requests in the current stack
     Update {
@@ -40,6 +40,7 @@ fn main() {
         // Commands::Push {} => {
         //     panic!("Push not implemented")
         // }
+        Commands::Cleanup {  } => commands::clean_up(),
         Commands::Wait { branch } => commands::wait(branch.to_owned()),
         Commands::Update { revset } => commands::update(revset),
     }

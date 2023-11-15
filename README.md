@@ -11,7 +11,7 @@ This is a tool that helps you manage your pull requests on GitHub.
 ## Installation
 
 ```shell
- cargo install --git 'https://github.com/FergusYip/merge-mate' --locked --force 
+cargo install --git 'https://github.com/FergusYip/merge-mate' --locked --force
 ```
 
 ## Quick Start
