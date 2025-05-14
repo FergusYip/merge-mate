@@ -10,6 +10,16 @@ pub fn clean_up() {
                 continue;
             }
 
+            // Run git sl 'stack(branch)' to show the stack with color output
+            let output = Command::new("git")
+                .args(["sl", &format!("stack({})", branch)])
+                .env("CLICOLOR_FORCE", "1")  // Force color output
+                .output()
+                .expect("Failed to execute git sl command");
+
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            print!("{}", stdout);
+
             let confirmation = Confirm::new()
                 .default(true)
                 .wait_for_newline(true)
